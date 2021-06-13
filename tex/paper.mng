@@ -217,8 +217,8 @@ funnyAdd : (x : Nat)
         -> (v : Nat ** (x `LTE` v, y `LTE` v))
 funnyAdd x y = (x + y + x ** (ltePlusLeft x (x + y), ltePlusFunny x y))
 \end{minted}
-Despite extensive use of library lemmas like \verb+lteRefl+, \verb+lteSuccRight+, \verb+plusCommutative+ and \verb+plusAssociative+,
-the code is considerably longer and is riddled with unnecessary details.
+
+Despite extensive use of library lemmas like \verb+lteRefl+, \verb+lteSuccRight+, \verb+plusCommutative+ and \verb+plusAssociative+, the code is considerably longer and is riddled with unnecessary details.
 
 More than that, slight variations of the pre- and post-conditions are just a matter of updating the signature with refinement types:
 \begin{minted}{idris}
