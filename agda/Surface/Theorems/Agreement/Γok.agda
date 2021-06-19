@@ -1,15 +1,18 @@
 {-# OPTIONS --safe #-}
 
-module Surface.Theorems.TCTX where
+module Surface.Theorems.Agreement.Γok where
 
-open import Agda.Builtin.Equality
+open import Relation.Binary.PropositionalEquality using (refl)
 open import Data.Nat.Base
 open import Data.Nat.Properties
 
 open import Surface.Syntax
 open import Surface.Derivations
-open import Surface.Derivations.WF
 open import Surface.Theorems.Helpers
+open import Surface.Theorems.Agreement.Γok.WF
+
+Γok-tail-smaller : (δ : (Γ , τ) ok) → size-ok (Γok-tail δ) < size-ok δ
+Γok-tail-smaller (TCTX-Bind prevOk τδ) = s≤s (m≤m⊕n (size-ok prevOk) (size-twf τδ))
 
 abstract
   -- Referred to as T-implies-TCTX in the paper
@@ -35,31 +38,31 @@ abstract
                            → size-ok (Γok-tail (Γ⊢ε⦂τ-⇒-Γok δ)) < size-t δ
 
   private
-    a<b-⇒-a<b<>c : {b c a : ℕ} → a < b → a < suc (b <> c)
-    a<b-⇒-a<b<>c {b} {c} a<b = <-trans a<b (s≤s (m≤m<>n b c))
+    a<b-⇒-a<b⊕c : {b c a : ℕ} → a < b → a < suc (b ⊕ c)
+    a<b-⇒-a<b⊕c {b} {c} a<b = <-trans a<b (s≤s (m≤m⊕n b c))
 
-    a<c-⇒-a<b<>c : {b c a : ℕ} → a < c → a < suc (b <> c)
-    a<c-⇒-a<b<>c {b} {c} a<c = <-trans a<c (s≤s (n≤m<>n b c))
+    a<c-⇒-a<b⊕c : {b c a : ℕ} → a < c → a < suc (b ⊕ c)
+    a<c-⇒-a<b⊕c {b} {c} a<c = <-trans a<c (s≤s (n≤m⊕n b c))
 
   Γ⊢ε⦂τ-⇒-Γok-smaller : (δ : Γ ⊢ ε ⦂ τ)
                       → size-ok (Γ⊢ε⦂τ-⇒-Γok δ) < size-t δ
-  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Unit _) = s≤s (≤-reflexive refl)
-  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Var _ _) = s≤s (≤-reflexive refl)
-  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Abs _ bodyδ) = a<c-⇒-a<b<>c (Γ⊢ε⦂τ-⇒-Γok-tail-smaller bodyδ)
-  Γ⊢ε⦂τ-⇒-Γok-smaller (T-App _ δ₂) = a<c-⇒-a<b<>c (Γ⊢ε⦂τ-⇒-Γok-smaller δ₂)
-  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Case _ scrutδ _) = a<b-⇒-a<b<>c (Γ⊢ε⦂τ-⇒-Γok-smaller scrutδ)
-  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Con _ conArg _) = a<b-⇒-a<b<>c (Γ⊢ε⦂τ-⇒-Γok-smaller conArg)
-  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Sub δ _ _) = a<b-⇒-a<b<>c (Γ⊢ε⦂τ-⇒-Γok-smaller δ)
-  Γ⊢ε⦂τ-⇒-Γok-smaller (T-RConv δ _ _) = a<b-⇒-a<b<>c (Γ⊢ε⦂τ-⇒-Γok-smaller δ)
+  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Unit _) = s≤s (≤-step ≤-refl)
+  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Var _ _) = s≤s ≤-refl
+  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Abs _ bodyδ) = a<c-⇒-a<b⊕c (Γ⊢ε⦂τ-⇒-Γok-tail-smaller bodyδ)
+  Γ⊢ε⦂τ-⇒-Γok-smaller (T-App _ δ₂) = a<c-⇒-a<b⊕c (Γ⊢ε⦂τ-⇒-Γok-smaller δ₂)
+  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Case _ scrutδ _) = a<b-⇒-a<b⊕c (Γ⊢ε⦂τ-⇒-Γok-smaller scrutδ)
+  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Con _ conArg _) = a<b-⇒-a<b⊕c (Γ⊢ε⦂τ-⇒-Γok-smaller conArg)
+  Γ⊢ε⦂τ-⇒-Γok-smaller (T-Sub δ _ _) = a<b-⇒-a<b⊕c (Γ⊢ε⦂τ-⇒-Γok-smaller δ)
+  Γ⊢ε⦂τ-⇒-Γok-smaller (T-RConv δ _ _) = a<b-⇒-a<b⊕c (Γ⊢ε⦂τ-⇒-Γok-smaller δ)
 
   Γ⊢ε⦂τ-⇒-Γok-tail-smaller δ = <-trans (Γok-tail-smaller (Γ⊢ε⦂τ-⇒-Γok δ)) (Γ⊢ε⦂τ-⇒-Γok-smaller δ)
 
   Γ⊢τ-⇒-Γok-smaller : (δ : Γ ⊢ τ)
                     → size-ok (Γ⊢τ-⇒-Γok δ) < size-twf δ
-  Γ⊢τ-⇒-Γok-smaller (TWF-TrueRef _) = s≤s (≤-reflexive refl)
-  Γ⊢τ-⇒-Γok-smaller (TWF-Base ε₁δ _) = a<b-⇒-a<b<>c (Γ⊢ε⦂τ-⇒-Γok-tail-smaller ε₁δ)
-  Γ⊢τ-⇒-Γok-smaller (TWF-Conj ρ₁δ _) = a<b-⇒-a<b<>c (Γ⊢τ-⇒-Γok-smaller ρ₁δ)
-  Γ⊢τ-⇒-Γok-smaller (TWF-Arr argδ _) = a<b-⇒-a<b<>c (Γ⊢τ-⇒-Γok-smaller argδ)
+  Γ⊢τ-⇒-Γok-smaller (TWF-TrueRef _) = s≤s ≤-refl
+  Γ⊢τ-⇒-Γok-smaller (TWF-Base ε₁δ _) = a<b-⇒-a<b⊕c (Γ⊢ε⦂τ-⇒-Γok-tail-smaller ε₁δ)
+  Γ⊢τ-⇒-Γok-smaller (TWF-Conj ρ₁δ _) = a<b-⇒-a<b⊕c (Γ⊢τ-⇒-Γok-smaller ρ₁δ)
+  Γ⊢τ-⇒-Γok-smaller (TWF-Arr argδ _) = a<b-⇒-a<b⊕c (Γ⊢τ-⇒-Γok-smaller argδ)
   Γ⊢τ-⇒-Γok-smaller (TWF-ADT (px ∷ pxs)) = <-trans
-                                             (a<b-⇒-a<b<>c (Γ⊢τ-⇒-Γok-smaller px))
+                                             (a<b-⇒-a<b⊕c (Γ⊢τ-⇒-Γok-smaller px))
                                              (n<1+n (suc (size-twf px ⊔ size-all-cons pxs)))
