@@ -382,12 +382,6 @@ The typing rules for the surface language are presented in \figref{surface_typin
 As usual, to simplify the exposition,
 all bindings in contexts are assumed to have different names, and all labels in each ADT are assumed to be different.
 
-We also introduce a shorthand notation $\top$ denoting some tautology
-which we use for trivial refinements that do not carry any extra information.
-In particular, one good way to define $\top$ is
-to state the equality of the sole inhabitant of $\Unit$ to itself:
-$\top \triangleq \unit = \unit$.
-
 We also have the following concessions:
 \begin{itemize}
   \item The syntax only allows refinements on base types.
@@ -434,18 +428,13 @@ We also have the following concessions:
 the proofs are done over the language defined here, we need to add at least Int.}
 \end{remark}
 
-Type equivalence, together with the \textsc{T-RConv} typing rule, deserves some special attention.
-Note that this relation is indeed restricted, and contains only a tiny subset of what the usual $\beta$-equivalence relates.
 \begin{remark}
-In fact, $[[ requiv ]]$ is neither transitive nor reflexive, so it is not really an \emph{equivalence}, but \textsc{T-RConv} can be seen as the transitive-reflexive closure of $[[ requiv ]]$.
-\rae{I'm not sure what ``becomes one'' really means here.}
-\gr{Ah, that's really poor wording on my side. Hopefully fixed that.}
-Indeed, transitivity is regained via consecutive applications of \textsc{T-RConv}, and reflexivity is achieved by not applying this rule at all.
+  Type equivalence $[[ requiv ]]$ alone is neither transitive nor reflexive,
+  but those properties are regained by applying \textsc{T-RConv}, the only rule relying on $[[ requiv ]]$, enough times:
+  zero for reflexivity and multiple times for transitivity.
+  Delegating reflexivity and transitivity to the typing derivations, while perhaps being non-canonical,
+  simplifies the proofs of the metatheoretical properties of the language.
 \end{remark}
-Why is such a strange type equivalence needed?
-In short, this is the smallest relation enabling the preservation \cref{thm:surface_preservation} in our non-lazy,
-call-by-value language that also has a form of dependent types (namely, the conclusion of \textsc{T-App} having the type of the form $[[ [ x |-> es ] ts ]]$).
-We also discuss this in the section on the metatheoretical properties of the language.
 
 \begin{figure}[ht]
   \centering
@@ -482,7 +471,7 @@ We also discuss this in the section on the metatheoretical properties of the lan
 
 The translation function $[|\ |]$ maps the typing context $\nonterm G$ to some logic that the oracle can handle, and that we leave abstract.
 Generally, the translation of a whole context is the conjunction of the translations of the types of the individual bindings,
-and, within each type, the translation of the conjunction of atomic refinements is the conjunction of the translations of the atomic refinements.
+and, within each refined type, the translation of the conjunction of atomic refinements is the conjunction of the translations of the atomic refinements.
 
 \subsubsection{Requirements on the oracle}\label{sect:oracle_requirements}
 
@@ -924,7 +913,7 @@ We consider the term typing rule at the root of the derivation tree for $[[ G |-
     and the main complication stems from the following.
     In \textsc{T-Case}, each (surface) $[[esi]]$ is being type checked in the context
     where $x$ (the witness of the $\mathbf{case}$ branch taken)
-    has type $[[ { _ : Unit | es = < li = xi > as ts } ]]$.
+    has type $[[ { _ : Unit | es = (< li = xi > as ts) of ts } ]]$.
     After $[[esi]]$ gets translated into the (core) term $[[eci]]$,
     the latter is type checked in the context where $\hat x$
     has the dependent pair type $[[ Sigma Unitc (\_ : Unitc. ec equal ( < li = xi > as tc ) of tc) ]]$.
