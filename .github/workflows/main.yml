@@ -52,14 +52,13 @@ jobs:
         with:
           name: paper
       - name: Create Release
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: paper-${{ steps.vars.outputs.date }}-${{ steps.vars.outputs.sha8 }}
-          release_name: Main paper (version ${{ steps.vars.outputs.date }})
-          draft: false
+          tag: paper-${{ steps.vars.outputs.date }}-${{ steps.vars.outputs.sha8 }}
+          name: Main paper (version ${{ steps.vars.outputs.date }})
           prerelease: true
       - name: Upload pdf
         uses: actions/upload-release-asset@v1
